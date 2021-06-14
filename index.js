@@ -3,6 +3,8 @@ const express = require('express')
 const app = express()
 const PORT = 3001
 
+app.use(express.json())
+
 let persons = 
     [
       {
@@ -32,6 +34,21 @@ app.delete('/api/persons/:id', (request, response) => {
     persons = persons.filter(person => person.id !== id)
     response.status(204).end()
     
+})
+app.post('/api/persons', (request, response) => {
+  const id = Math.floor(Math.random() * 1000)
+  const person = request.body
+  person.id = id
+  if(!person.name || !person.number){
+    response.status(400).json({error:'both name and number required'})
+  }
+  else if(persons.some(p => person.name === p.name)){
+    response.status(400).json({error:'name must be unique'})
+  }
+  else{
+    persons.push(person)
+    response.json(person)
+  }
 })
 app.get('/api/persons', (request, response) => {
     response.json(persons)
