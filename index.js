@@ -1,9 +1,14 @@
-const { request, response } = require('express')
+const { request, response, json } = require('express')
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
 const PORT = 3001
-
 app.use(express.json())
+morgan.token('json', (req, res) => {return JSON.stringify(req.body)})
+
+
+app.use(morgan(':method :url :res[content-length] - :response-time ms :json'))
+
 
 let persons = 
     [
