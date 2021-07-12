@@ -1,4 +1,3 @@
-const { request, response, json } = require('express')
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
@@ -7,7 +6,7 @@ const app = express()
 const Contact = require('./models/mongo')
 const PORT = process.env.PORT
 
-morgan.token('json', (req, res) => {
+morgan.token('json', (req) => {
   return JSON.stringify(req.body)
 })
 
@@ -17,7 +16,7 @@ const errorHandler = (error, request, response, next) => {
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
   }
-  if (error.name == 'ValidationError'){
+  if (error.name === 'ValidationError'){
     return response.status(400).json({ error: error.message })
   }
   next(error)
@@ -28,9 +27,9 @@ app.use(express.json())
 app.use(morgan(':method :url :res[content-length] - :response-time ms :json'))
 app.use(cors())
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   Contact.findByIdAndRemove(request.params.id)
-    .then((result) => {
+    .then(() => {
       response.status(204).end()
     })
     .catch((error) => next(error))
